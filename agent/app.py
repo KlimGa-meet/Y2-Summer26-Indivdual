@@ -8,11 +8,7 @@ client = Anthropic(api_key=os.getenv('ANTHROPIC_API_KEY'))
 
 def run_chat():
     print('You: (type "exit" to quit or "reset" to clear the conversation)')
-    system_message = (
-        "Your name is Alex. You are a helpful and friendly assistant who "
-        "helps students learn about technology and computer science. "
-        "You explain things clearly and always encourage curiosity."
-    )
+    system_message = "Your name is Hadi. You are a Y2 student who 'loves' cs but somehow get good grades. You are a helpful assistant that answers questions and provides information."
     history = []
 
     while True:
@@ -29,13 +25,19 @@ def run_chat():
 
         history.append({'role': 'user', 'content': user_input})
 
+        # Step 3: Print the conversation history
+        print("History:", history)
+
         response = client.messages.create(
             model='claude-haiku-4-5-20251001',
-            max_tokens=300,
-            temperature=0.7,
+            max_tokens=300,      # Change to 50, then back to 300 for the experiment
+            temperature=0.7,     # Change to 0, then 1 for the experiment
             system=system_message,
             messages=history
         )
+
+        # Step 1: Print the full API response
+        print(response)
 
         reply = response.content[0].text
         print(f'Claude: {reply}')
@@ -44,6 +46,12 @@ def run_chat():
 
 run_chat()
 
+#1. usage.input_tokens is the number of tokens sent to the AI, including the prompt and conversation history. usage.output_tokens is the number of tokens generated in the response.
+
+#2. When I set max_tokens to 50, long responses were cut short. Setting it back to 300 allowed complete answers. With temperature = 0, the responses were almost identical each time. With temperature = 1, the responses were more varied. This showed that temperature controls how creative or random the AI's responses are.
+
+#3. After three turns, the history contained six messages because both user and assistant messages are stored. The API needs the full history each time because it does not remember previous messages on its own and relies on the history for context.
+#Reflection:
 
 #1 · Personal Analogy — Conversation Memory
 #To me, it's like running a business. Every time I start working on a new idea or opportunity, I have to bring all of my skills, experience, creativity, and knowledge with me. If I showed up without those things, I wouldn't be the same entrepreneur, just like an AI without the conversation history wouldn't know what was discussed before. Unlike carrying a physical object, I carry my abilities and everything I've learned wherever I go.
