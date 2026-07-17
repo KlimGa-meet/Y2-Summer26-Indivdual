@@ -8,7 +8,23 @@ client = Anthropic(api_key=os.getenv('ANTHROPIC_API_KEY'))
 
 def run_chat():
     print('You: (type "exit" to quit or "reset" to clear the conversation)')
-    system_message = "Your name is Hadi. You are a Y2 student who 'loves' cs but somehow get good grades. You are a helpful assistant that answers questions and provides information."
+
+    system_message = """
+You are Hadi, a Year 2 Computer Science student.
+
+Your job is to help students understand computer science concepts, debug code, and improve their programming skills.
+
+Rules:
+- Always explain concepts clearly and simply.
+- Always encourage the user to learn instead of just giving the answer.
+- Never answer questions that are unrelated to computer science or programming. If the user asks something outside your role, politely explain that you only help with CS-related topics.
+
+Response format:
+- Start with a one-sentence summary of what the user asked.
+- Then provide a clear explanation or solution.
+- End with one follow-up question that helps continue the conversation.
+"""
+
     history = []
 
     while True:
@@ -25,18 +41,18 @@ def run_chat():
 
         history.append({'role': 'user', 'content': user_input})
 
-        # Step 3: Print the conversation history
+        # Print the conversation history
         print("History:", history)
 
         response = client.messages.create(
             model='claude-haiku-4-5-20251001',
-            max_tokens=300,      # Change to 50, then back to 300 for the experiment
-            temperature=0.7,     # Change to 0, then 1 for the experiment
+            max_tokens=300,
+            temperature=0.7,
             system=system_message,
             messages=history
         )
 
-        # Step 1: Print the full API response
+        # Print the full API response
         print(response)
 
         reply = response.content[0].text
@@ -46,22 +62,20 @@ def run_chat():
 
 run_chat()
 
-#1. usage.input_tokens is the number of tokens sent to the AI, including the prompt and conversation history. usage.output_tokens is the number of tokens generated in the response.
+#1 · Personal Analogy
 
-#2. When I set max_tokens to 50, long responses were cut short. Setting it back to 300 allowed complete answers. With temperature = 0, the responses were almost identical each time. With temperature = 1, the responses were more varied. This showed that temperature controls how creative or random the AI's responses are.
+#For me, the invisible thing is my religion. As an Armenian, Christianity is part of how I was raised, and even though people can't see it, it influences my decisions and how I treat others. It's always there in the background, just like the system prompt guides the AI without the user seeing it.
 
-#3. After three turns, the history contained six messages because both user and assistant messages are stored. The API needs the full history each time because it does not remember previous messages on its own and relies on the history for context.
-#Reflection:
-
-#1 · Personal Analogy — Conversation Memory
-#To me, it's like running a business. Every time I start working on a new idea or opportunity, I have to bring all of my skills, experience, creativity, and knowledge with me. If I showed up without those things, I wouldn't be the same entrepreneur, just like an AI without the conversation history wouldn't know what was discussed before. Unlike carrying a physical object, I carry my abilities and everything I've learned wherever I go.
 #2 · If I Deleted This Line
-#history.append({'role': 'assistant', 'content': reply})
-#I predicted that the AI would stop remembering its own responses, and that's exactly what happened. It could still see what I said, but it forgot what it had previously replied, making the conversation less consistent.
-#load_dotenv()
-#I predicted the program would start but fail when trying to use the API key. That was correct because without loading the .env file, the environment variables—including the API key—aren't available.
-#break inside if user_input.lower() == 'exit':
-#I predicted that typing "exit" would no longer quit the program. Instead, it would keep looping and continue asking for more input because nothing tells the loop to stop.
-#3 · Bug Diary
-#The biggest issue I ran into today was that my API key wasn't working, and before figuring it out I also couldn't get pip to work even though it seemed to work for everyone else. At first, I thought there was something wrong with the API itself, but the real problems were with my local setup and configuration. The gap between my first guess and the actual issue showed me that errors often come from the environment or installation, not necessarily from the code I'm writing.
 
+#system=system_message – I thought the AI would stop acting like Hadi, and it did. It became a regular chatbot instead of following the role I gave it.
+#The "Never answer unrelated questions" rule – I predicted it would answer any question, and it did because there was no longer anything limiting it.
+#The response format instruction – Without it, the replies became less organized and stopped following the structure I wanted.
+
+#3 · Bug Diary
+
+#I got the error command 'python.execInTerminal-icon' not found. At first I thought my code was broken, but it turned out to be an issue with VS Code, not my program.
+
+#Bonus
+
+#My analogy still makes sense. I'd just say that a system prompt is like the values from my religion—it quietly guides my actions even though other people can't see it.
